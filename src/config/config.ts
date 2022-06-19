@@ -3,6 +3,7 @@ export const config = {
     "username": "tahyour",
     "password": "Jesusluv01",
     "database": "udagramtahyourdev",
+    // "host": "localhost",
     "host": "udagramtahyourdev.cwczntmpvhyy.us-east-1.rds.amazonaws.com",
     "dialect": "postgres",
     "aws_region": "us-east-1",
@@ -10,7 +11,7 @@ export const config = {
     "aws_media_bucket": ""
   },
   "jwt": {
-    "secret": " "
+    "secret": ""
   },
   "prod": { 
     "username": "",

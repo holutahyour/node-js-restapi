@@ -10,7 +10,12 @@ router.get('/', async (req: Request, res: Response) => {
     const items = await FeedItem.findAndCountAll({order: [['id', 'DESC']]});
     items.rows.map((item) => {
             if(item.url) {
-                item.url = AWS.getGetSignedUrl(item.url);
+                try {
+                    // item.url = AWS.getGetSignedUrl(item.url);
+                } catch (error) {
+                    console.log(error);
+                    
+                }
             }
     });
     res.send(items);
@@ -18,13 +23,52 @@ router.get('/', async (req: Request, res: Response) => {
 
 //@TODO
 //Add an endpoint to GET a specific resource by Primary Key
+router.get('/:id',
+    requireAuth,
+    async (req: Request, res: Response) => {
+        let { id } = req.params
+        
+        if(!id){
+            return res.status(400).send({message: 'id is required'})
+        }
+
+        const item = await FeedItem.findByPk(id);
+
+        if(!item){
+            return res.status(404).send({message: 'item not found'})
+        }
+        
+        return res.status(200).send(item);
+    })
 
 // update a specific resource
 router.patch('/:id', 
     requireAuth, 
     async (req: Request, res: Response) => {
         //@TODO try it yourself
-        res.status(500).send("not implemented")
+        let { id } = req.params;
+        const requestBody = req.body;
+        
+        if(!id){
+            return res.status(400).send({message: 'id is required'})
+        }
+
+        const item = await FeedItem.findByPk(id);
+
+        if(!item){
+            return res.status(404).send({message: 'item not found'})
+        }else{
+            try {
+                await FeedItem.update(requestBody, {where: {_id: id}})
+            } catch (error) {
+                console.log(error);
+                
+            }
+        }
+        
+        return res.status(200).send(item);
+
+        // res.status(500).send("not implemented")
 });
 
 
@@ -63,7 +107,7 @@ router.post('/',
 
     const saved_item = await item.save();
 
-    saved_item.url = AWS.getGetSignedUrl(saved_item.url);
+    // saved_item.url = AWS.getGetSignedUrl(saved_item.url);
     res.status(201).send(saved_item);
 });
 
